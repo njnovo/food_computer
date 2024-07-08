@@ -16,7 +16,7 @@ ads = ADS.ADS1115(i2c)
 chan = AnalogIn(ads, ADS.P1)
 
 # Replace with your actual offset value
-Offset = 0.0
+Offset = 0
 
 # Start an iterator thread so serial buffer doesn't overflow
 
@@ -30,10 +30,15 @@ def read_ph_sensor():
     buf.sort()
 
     avg_value = sum(buf[2:8]) / 6  # Take the average value of 6 center samples
-    ph_value = avg_value * 5.0 / 1024 / 6  # Convert the analog value into voltage
+    print(f"avg value: {avg_value}")
+    ph_value = avg_value * 5.0 / 6  # Convert the analog value into voltage
+    print(f"ph value: {ph_value}")
     ph_value = 3.5 * ph_value + Offset  # Convert the voltage into pH value
+    print(f"adj ph {ph_value}")
     return ph_value
 
 while True:
     ph_value = read_ph_sensor()
-    print(f"pH: {ph_value:.2f}")
+   # print(f"pH: {ph_value:.2f}")
+    #print(f"voltage: {chan.voltage}")
+    
