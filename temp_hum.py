@@ -1,23 +1,17 @@
-import Adafruit_DHT
+import RPi.GPIO as GPIO
+import dht11
 
-# Set sensor type : Options are DHT11, DHT22 or AM2302
-sensor = Adafruit_DHT.DHT11
+# initialize GPIO
+GPIO.setwarnings(False)
+GPIO.setmode(GPIO.BCM)
+GPIO.cleanup()
 
-# Set GPIO sensor is connected to
-gpio = 4
+# read data using pin 21
+instance = dht11.DHT11(pin = 21)
+result = instance.read()
 
-# Use read_retry method. This will retry up to 15 times to
-# get a sensor reading (waiting 2 seconds between each retry).
-# This is useful because sometimes the sensor can be hard to read
-# and a few retries might help.
-humidity, temperature = Adafruit_DHT.read_retry(sensor, gpio)
-
-# Note that sometimes you won't get a reading and
-# the results will be null (because Linux can't
-# guarantee the timing of calls to read the sensor). 
-# If this happens try again!
-if humidity is not None and temperature is not None:
-    print(f'Temperature: {temperature:.1f}°C')
-    print(f'Humidity: {humidity:.1f}%')
+if result.is_valid():
+    print(f"Temperature: {((9/5)*result.temperature)+32}")
+    print("Humidity: %-3.1f %%" % result.humidity)
 else:
-    print('Failed to get reading. Try again!')
+    print("Error: %d" % result.error_code)
